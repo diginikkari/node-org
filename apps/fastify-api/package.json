@@ -1,0 +1,74 @@
+{
+  "name": "@node-org/fastify-api",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "name": "fastify-api",
+    "targets": {
+      "build": {
+        "executor": "@nx/esbuild:esbuild",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "defaultConfiguration": "production",
+        "options": {
+          "platform": "node",
+          "outputPath": "apps/fastify-api/dist",
+          "format": [
+            "cjs"
+          ],
+          "bundle": false,
+          "main": "apps/fastify-api/src/main.ts",
+          "tsConfig": "apps/fastify-api/tsconfig.app.json",
+          "assets": [
+            "apps/fastify-api/src/assets"
+          ],
+          "esbuildOptions": {
+            "sourcemap": true,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        },
+        "configurations": {
+          "development": {},
+          "production": {
+            "generateLockfile": true,
+            "esbuildOptions": {
+              "sourcemap": false,
+              "outExtension": {
+                ".js": ".js"
+              }
+            }
+          }
+        }
+      },
+      "serve": {
+        "continuous": true,
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "fastify-api:build",
+          "runBuildTargetDependencies": false
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "fastify-api:build:development"
+          },
+          "production": {
+            "buildTarget": "fastify-api:build:production"
+          }
+        }
+      },
+      "docker-build": {
+        "dependsOn": [
+          "build"
+        ],
+        "command": "docker build -f apps/fastify-api/Dockerfile . -t fastify-api"
+      }
+    }
+  }
+}
