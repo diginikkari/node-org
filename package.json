@@ -12,6 +12,7 @@
     "fastify-plugin": "~5.0.1"
   },
   "devDependencies": {
+    "@nx/devkit": "^21.0.3",
     "@nx/esbuild": "21.0.3",
     "@nx/js": "21.0.3",
     "@nx/node": "21.0.3",

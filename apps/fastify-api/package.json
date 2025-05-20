@@ -43,6 +43,31 @@
           }
         }
       },
+      "gen-package-json": {
+        "dependsOn": [
+          "build"
+        ],
+        "command": "node tools/prepare-dist.mjs apps/fastify-api"
+      },
+      "gen-lockfile": {
+        "dependsOn": [
+          "build"
+        ],
+        "command": "node tools/lockfile.mjs apps/fastify-api"
+      },
+      "docker-build": {
+        "dependsOn": [
+          "gen-package-json",
+          "gen-lockfile"
+        ],
+        "command": "docker build -f apps/fastify-api/Dockerfile . -t localhost:5001/api"
+      },
+      "docker-run": {
+        "dependsOn": [
+          "docker-build"
+        ],
+        "command": "docker run -p 3000:3000 localhost:5001/api"
+      },
       "serve": {
         "continuous": true,
         "executor": "@nx/js:node",
@@ -62,13 +87,17 @@
             "buildTarget": "fastify-api:build:production"
           }
         }
-      },
-      "docker-build": {
-        "dependsOn": [
-          "build"
-        ],
-        "command": "docker build -f apps/fastify-api/Dockerfile . -t fastify-api"
       }
     }
+  },
+  "devDependencies": {
+    "@node-org/my-lib": "workspace:*"
+  },
+  "dependencies": {
+    "fastify": "^5.2.1",
+    "@fastify/autoload": "~6.0.3",
+    "@fastify/sensible": "~6.0.2",
+    "fastify-plugin": "~5.0.1",
+    "zod": "^3.24.4"
   }
 }

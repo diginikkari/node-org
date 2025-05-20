@@ -4,21 +4,24 @@
 # Tip: Modify "docker-build" options in project.json to change docker build args.
 #
 # Run the container with `docker run -p 3000:3000 -t fastify-api`.
-FROM docker.io/node:lts-alpine
+FROM node:22-slim
 
 ENV HOST=0.0.0.0
 ENV PORT=3000
+# ENV NODE_PATH=/app/fastify-api/dist/workspace_modules
+
+RUN corepack enable
 
 WORKDIR /app
 
-RUN addgroup --system fastify-api && \
-          adduser --system -G fastify-api fastify-api
+# RUN addgroup --system fastify-api && \
+#           adduser --system -G fastify-api fastify-api
 
-COPY apps/fastify-api/dist fastify-api/
-RUN chown -R fastify-api:fastify-api .
+# Copy package files first for better caching
+COPY apps/fastify-api/dist fastify-api
+COPY apps/fastify-api/pnpm-lock.yaml fastify-api/
 
-# You can remove this install step if you build with `--bundle` option.
-# The bundled output will include external dependencies.
-RUN npm --prefix fastify-api --omit=dev -f install
+# Install dependencies
+RUN pnpm --prefix fastify-api -f install
 
-CMD [ "node", "fastify-api" ]
+CMD [ "node", "fastify-api/main.js" ]

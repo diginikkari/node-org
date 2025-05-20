@@ -8,6 +8,9 @@
     },
     {
       "path": "./apps/fastify-api"
+    },
+    {
+      "path": "./libs/my-lib"
     }
   ]
 }
